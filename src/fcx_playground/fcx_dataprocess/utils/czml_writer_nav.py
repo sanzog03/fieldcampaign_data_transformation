@@ -83,8 +83,8 @@ class NavCzmlWriter:
 
     def _get_time_info(self, time):
         time = time.values.astype('datetime64[s]') # pandas series to numpy ndarray
-        time_window = time[[0, -1]].astype(np.string_)  # get first and last element
-        time_window = np.core.defchararray.add(time_window, np.string_('Z')) # add Z to each time window element to make it ISO format
+        time_window = time[[0, -1]].astype(np.bytes_)  # get first and last element
+        time_window = np.core.defchararray.add(time_window, np.bytes_('Z')) # add Z to each time window element to make it ISO format
         time_window = np.core.defchararray.decode(time_window, 'UTF-8') # decode to UTF-8 from byte_ object
         time_steps = (time - time[0]).astype(int).tolist()
         return time_window, time_steps

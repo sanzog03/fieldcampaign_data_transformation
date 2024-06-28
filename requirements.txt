@@ -11,3 +11,8 @@ xarray
 # for xarray backend to open nc files
 
 netCDF4
+
+icartt
+
+matplotlib
+scipy
