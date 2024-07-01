@@ -27,7 +27,9 @@ model = {
     "properties": {
         "roll": {},
         "pitch": {},
-        "heading": {}
+        "heading": {},
+        "co2": {},
+        "ch4": {},
     }
 }
 

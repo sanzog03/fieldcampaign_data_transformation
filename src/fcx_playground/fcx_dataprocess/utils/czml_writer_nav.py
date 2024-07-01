@@ -53,11 +53,14 @@ class NavCzmlWriter:
         self.model['properties']['roll']['number'] = [0] * 2 * length
         self.model['properties']['pitch']['number'] = [0] * 2 * length
         self.model['properties']['heading']['number'] = [0] * 2 * length
+        self.model['properties']['co2']['number'] = [0] * 2 * length
+        self.model['properties']['ch4']['number'] = [0] * 2 * length
 
     def set_with_df(self, df):
         self._set_time(*self._get_time_info(df['timestamp']))
         self._set_position(df['longitude'], df['latitude'], df['altitude'])
         self._set_orientation(df['roll'], df['pitch'], df['heading'])
+        self._set_ghg_concentration_data(df['co2_ppm'], df['ch4_ppb'])
 
     def _set_time(self, time_window, time_steps):
         [epoch, end] = time_window
@@ -67,9 +70,13 @@ class NavCzmlWriter:
         self.model['properties']['roll']['epoch'] = epoch
         self.model['properties']['pitch']['epoch'] = epoch
         self.model['properties']['heading']['epoch'] = epoch
+        self.model['properties']['co2']['epoch'] = epoch
+        self.model['properties']['ch4']['epoch'] = epoch
         self.model['properties']['roll']['number'][0::2] = time_steps
         self.model['properties']['pitch']['number'][0::2] = time_steps
         self.model['properties']['heading']['number'][0::2] = time_steps
+        self.model['properties']['co2']['number'][0::2] = time_steps
+        self.model['properties']['ch4']['number'][0::2] = time_steps
 
     def _set_position(self, longitude, latitude, altitude):
         self.model['position']['cartographicDegrees'][1::4] = longitude
@@ -81,10 +88,14 @@ class NavCzmlWriter:
         self.model['properties']['pitch']['number'][1::2] = pitch
         self.model['properties']['heading']['number'][1::2] = heading
 
+    def _set_ghg_concentration_data(self, co2, ch4):
+        self.model['properties']['co2']['number'][1::2] = co2
+        self.model['properties']['ch4']['number'][1::2] = ch4
+
     def _get_time_info(self, time):
         time = time.values.astype('datetime64[s]') # pandas series to numpy ndarray
-        time_window = time[[0, -1]].astype(np.string_)  # get first and last element
-        time_window = np.core.defchararray.add(time_window, np.string_('Z')) # add Z to each time window element to make it ISO format
+        time_window = time[[0, -1]].astype(np.bytes_)  # get first and last element
+        time_window = np.core.defchararray.add(time_window, np.bytes_('Z')) # add Z to each time window element to make it ISO format
         time_window = np.core.defchararray.decode(time_window, 'UTF-8') # decode to UTF-8 from byte_ object
         time_steps = (time - time[0]).astype(int).tolist()
         return time_window, time_steps

@@ -53,6 +53,8 @@ class NavCZMLDataProcess(CZMLDataProcess):
     heading = data[:, col_index_map["heading"]] * np.pi / 180. - np.pi / 2.
     pitch = data[:, col_index_map["pitch"]] * np.pi / 180.
     roll = data[:, col_index_map["roll"]] * np.pi / 180.
+    co2 = data[:, col_index_map["co2_ppm"]]
+    ch4 = data[:, col_index_map["ch4_ppb"]]
     
     # data masks
     # remove nan values
@@ -62,6 +64,8 @@ class NavCZMLDataProcess(CZMLDataProcess):
     mask = np.logical_and(mask, np.logical_not(np.isnan(heading)))
     mask = np.logical_and(mask, np.logical_not(np.isnan(pitch)))
     mask = np.logical_and(mask, np.logical_not(np.isnan(roll)))
+    mask = np.logical_and(mask, np.logical_not(np.isnan(co2)))
+    mask = np.logical_and(mask, np.logical_not(np.isnan(ch4)))
     
     # remove duplicate time values
     _, unique_idx = np.unique(time, return_index=True)
@@ -70,16 +74,30 @@ class NavCZMLDataProcess(CZMLDataProcess):
     unique[unique_idx] = True
     mask = np.logical_and(mask, unique)
     
-    # apply masks/filter and sample data
-    f_time = time[mask].astype('datetime64[s]')[::5]
-    f_latitude = latitude[mask][::5]
-    f_longitude = longitude[mask][::5]
-    f_altitude = altitude[mask][::5]
-    f_heading = heading[mask][::5]
-    f_pitch = pitch[mask][::5]
-    f_roll = roll[mask][::5]
+    # # apply masks/filter and sample data
+    # f_time = time[mask].astype('datetime64[s]')[::5]
+    # f_latitude = latitude[mask][::5]
+    # f_longitude = longitude[mask][::5]
+    # f_altitude = altitude[mask][::5]
+    # f_heading = heading[mask][::5]
+    # f_pitch = pitch[mask][::5]
+    # f_roll = roll[mask][::5]
+    # f_co2 = co2[mask][::5]
+    # f_ch4 = ch4[mask][::5]
 
-    filtered_data = pd.DataFrame(data = {"timestamp": f_time, "latitude": f_latitude, "longitude": f_longitude, "altitude": f_altitude, "heading": f_heading, "pitch": f_pitch, "roll": f_roll})
+    # apply masks/filter, no sample
+    f_time = time[mask].astype('datetime64[s]')
+    f_latitude = latitude[mask]
+    f_longitude = longitude[mask]
+    f_altitude = altitude[mask]
+    f_heading = heading[mask]
+    f_pitch = pitch[mask]
+    f_roll = roll[mask]
+    f_co2 = co2[mask]
+    f_ch4 = ch4[mask]
+
+    filtered_data = pd.DataFrame(data = {"timestamp": f_time, "latitude": f_latitude, "longitude": f_longitude, "altitude": f_altitude,
+                                         "heading": f_heading, "pitch": f_pitch, "roll": f_roll, "co2": co2, "ch4": ch4 })
     return filtered_data
   
   def _transformation(self, data: pd.DataFrame) -> pd.DataFrame:

@@ -37,7 +37,7 @@ class CZMLViz(CesiumViz):
               viewer.trackedEntity = flightEntity;
 
               // fix orientation
-              flightEntity.orientation = new Cesium.CallbackProperty((time, _result) => fixOrientation(flightEntity, time), false);
+              // flightEntity.orientation = new Cesium.CallbackProperty((time, _result) => fixOrientation(flightEntity, time), false);
 
               function fixOrientation(entity, time) {
                   const position = entity.position.getValue(time);
